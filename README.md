@@ -6,22 +6,31 @@ _REPLACE OR REMOVE EVERYTING BETWEEN "\_"_
 
 ### Student Info
 
--   Name: _YOUR NAME_
--   Section: _##_
+-   Name: _Ricky Yu_
+-   Section: _02_
 
 ## Simulation Design
 
-_A brief explanation of your simulation._
+_In a huge "room" (The whole screen) filled with people/cells wandering around. Able to put down an "infected" person/cell or "infect" one.
+   The infection may spread. There will be "healers" around to fight it.[^1]_
 
 ### Controls
 
--   _List all of the actions the player can have in your simulation_
-    -   _Include how to preform each action ( keyboard, mouse, UI Input )_
-    -   _Include what impact an action has in the simulation ( if is could be unclear )_
+-   _Drop in an "infect" person/cell_
+    -   _Mouse input_
+    -   _The infected will chase uninfected, slowly converting all the uninfected if untreated_
 
-## _Agent 1 Name_
+-   _UI input (speed mode)[^2]_
+    -   _Ui input_
+    -   _Make the simulation run faster (**maybe**)_
 
-_A brief explanation of this agent._
+-   _UI input (restart)[^3]_
+    -   _Ui input_
+    -   _restart the simulation_
+
+## _Agent 1 (Uninfected)_
+
+_The main object on the screen. Will "wander" aimlessly. Will run from infected._
 
 ### _State 1 Name_
 
@@ -55,9 +64,9 @@ _A brief explanation of this agent._
 
 - _List all the ways this agent can transition to this state_
 
-## _Agent 2 Name_
+## _Agent 2 (Infected)_
 
-_A brief explanation of this agent._
+_The enemy of the simulation. Will chase afterward nearest (if possible) uninfected. May be defeated by "healers"_
 
 ### _State 1 Name_
 
