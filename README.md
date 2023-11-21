@@ -24,7 +24,7 @@ _In a huge "room" (The whole screen) filled with people/cells wandering around. 
     -   _Ui input_
     -   _Make the simulation run faster (**maybe**)_
 
--   _UI input (restart)[^3]_
+-   _UI input (restart)[^2]_
     -   _Ui input_
     -   _restart the simulation_
 
@@ -32,80 +32,94 @@ _In a huge "room" (The whole screen) filled with people/cells wandering around. 
 
 _The main object on the screen. Will "wander" aimlessly. Will run from infected._
 
-### _State 1 Name_
+### _Wander state_
 
-**Objective:** _A brief explanation of this state's objective._
-
-#### Steering Behaviors
-
-- _List all behaviors used by this state_
-   - _If behavior has input data list it here_
-   - _eg, Flee - nearest Agent2_
-- Obstacles - _List all obstacle types this state avoids_
-- Seperation - _List all agents this state seperates from_
-   
-#### State Transistions
-
-- _List all the ways this agent can transition to this state_
-   - _eg, When this agent gets within range of Agent2_
-   - _eg, When this agent has reached target of State2_
-   
-### _State 2 Name_
-
-**Objective:** _A brief explanation of this state's objective._
+**Objective:** _The purpose is to wander like they have something to do. (maybe be at a station[^2])_
 
 #### Steering Behaviors
 
-- _List all behaviors used by this state_
-- Obstacles - _List all obstacle types this state avoids_
-- Seperation - _List all agents this state seperates from_
+- _Wander_
+   - _how many seconds in the future_
+   - _wander around. (maybe "do" things at a "station")_
+- Obstacles - _Maybe some trees, dead bodies, or other uninfected (agent 1)_
+- Seperation - _infected agent[^3]_
    
 #### State Transistions
 
-- _List all the ways this agent can transition to this state_
+- _All ways agent can transition to this state:_
+   - _When this agent sees no infected (agent 2)_
+
+### _Evasion (and flee) state_
+
+**Objective:** _Evade the infected (agent2)._
+
+#### Steering Behaviors
+
+- _evade_
+  - _list of target (infected Agent 2)_
+  - _Evade agent 2 (infected)_
+- Obstacles - _maybe some trees or something, dead bodies_
+- Seperation - _agent 2[^3]_
+   
+#### State Transistions
+
+- _All ways agent can transition to this state:_
+  - _When there is an infected (agent 2)_
+  - _When is in range  of infected (agent 2)_
 
 ## _Agent 2 (Infected)_
 
-_The enemy of the simulation. Will chase afterward nearest (if possible) uninfected. May be defeated by "healers"_
+_The enemy of the simulation. Will chase afterward nearest (if possible) uninfected. May be defeated by "healers"[^2]_
 
-### _State 1 Name_
+### _Pursuit ( and seek)_
 
-**Objective:** _A brief explanation of this state's objective._
-
-#### Steering Behaviors
-
-- _List all behaviors used by this state_
-- Obstacles - _List all obstacle types this state avoids_
-- Seperation - _List all agents this state seperates from_
-   
-#### State Transistions
-
-- _List all the ways this agent can transition to this state_
-   
-### _State 2 Name_
-
-**Objective:** _A brief explanation of this state's objective._
+**Objective:** _Chase after the uninfected (agent 1) and "kill" them._
 
 #### Steering Behaviors
 
-- _List all behaviors used by this state_
-- Obstacles - _List all obstacle types this state avoids_
-- Seperation - _List all agents this state seperates from_
+- _pursue_
+  - _List of uninfected (agent 1)_
+  - _Chase after uninfected (agent 1)_
+- Obstacles - _healers, trees or something_
+- Seperation - _Agent 1[^3]_
    
 #### State Transistions
 
-- _List all the ways this agent can transition to this state_
+- _All ways agent can transition to this state:_
+  - _When 1 or more uninfected (agent 1) exists_
+   
+### _Evasion_
+
+**Objective:** _Evade healers[^4]._
+
+#### Steering Behaviors
+
+- _Evade_
+  - _List of healers, if any_
+  - _Get away from healers (maybe weighted)_
+- Obstacles - _Terrarins[^2]_
+- Seperation - _Agent 1[^3]_
+   
+#### State Transistions
+
+- _All ways agent can transition to this state:_
+  - _Within range of healers_
 
 ## Sources
 
 -   _List all project sources here –models, textures, sound clips, assets, etc._
--   _If an asset is from the Unity store, include a link to the page and the author’s name_
+-   _I am going to hand draw my sprites, models, textures._
+    - _Clip studio paint and Pixilart (https://www.pixilart.com/)
 
 ## Make it Your Own
 
-- _List out what you added to your game to make it different for you_
-- _If you will add more agents or states make sure to list here and add it to the documention above_
-- _If you will add your own assets make sure to list it here and add it to the Sources section
+- _List out what you added to your game to make it different for you:_
+  - _Maybe some extra controls for spawning more enemies or healers
+
+- _If you will add more agents or states make sure to list here and add it to the documention above:_
+  - _Maybe a healer. [^4]
+
+- _I will be "hand drawing" all assets for sprites and background.
 
 ## Known Issues
 
@@ -115,3 +129,8 @@ _List any errors, lack of error checking, or specific information that I need to
 
 _If you did not complete a project requirement, notate that here_
 
+
+[^1]: May or may not change. I'm not too sure. Maybe.
+[^2]: Maybe. I'm not too sure at this point.
+[^3]: I'm not sure if I'm doing this correctly
+[^4]: Healer. I was thinking about making agent 1 have a bool for seperating between npc or healers.
