@@ -24,12 +24,6 @@ public class PhysicsObject : MonoBehaviour
         get { return velocity; }
     }
 
-    [SerializeField] private float radius;
-    public float Radius
-    {
-        get { return radius; }
-    }
-
     // Sum of all forces in a frame - New
     [SerializeField] private Vector3 acceleration = Vector3.zero;
 
@@ -37,6 +31,14 @@ public class PhysicsObject : MonoBehaviour
     [SerializeField] private float mass = 1;
 
     [SerializeField] private float maxSpeed = 10;
+
+
+    [SerializeField] private float radius;
+    public float Radius
+    {
+        get { return radius; }
+    }
+
 
     //camera
     Camera cam;

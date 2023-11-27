@@ -8,6 +8,10 @@ public abstract class Agent : MonoBehaviour
     [SerializeField] float maxSpeed;
     [SerializeField] float maxForce;
 
+    [SerializeField] float lookAheadTime;
+    [SerializeField] float wanderRadius;
+    
+
     protected Vector3 totalForce;
 
     private Vector3 wanderForce;
@@ -34,7 +38,7 @@ public abstract class Agent : MonoBehaviour
 
     protected abstract void CalcSteeringForces();
 
-    protected Vector3 Seek(Vector3 targetPos, float weight = 1f)
+    protected Vector3 Seek(Vector3 targetPos)
     {
         // Calculate desired velocity
         Vector3 desiredVelocity = targetPos - gameObject.transform.position;
@@ -46,7 +50,7 @@ public abstract class Agent : MonoBehaviour
         Vector3 seekingForce = desiredVelocity - physicsObject.Velocity;
 
         // Return seek steering force
-        return seekingForce * weight;
+        return seekingForce;
     }
 
     protected Vector3 Seek(GameObject target)
@@ -87,5 +91,23 @@ public abstract class Agent : MonoBehaviour
     {
         return physicsObject.Velocity * time + transform.position;
 
+    }
+
+    protected Vector3 Wander(float time)
+    {
+        //Choose a distance ahead
+        Vector3 futurePos = CalcFuturePosition(time);
+
+        //"Project a circle" into that space
+        //What radius works best? Do radii have an effect on agent's movement?
+        //Get a random angle to determine displacement vector
+        float randAngle = Random.Range(0, Mathf.PI * 2);
+
+        //Where would that displacement vector end?  Go there.
+        Vector3 targetPos = futurePos;
+        //targetPos.x / y += Mathf.Sin / Cos(randAngle) * radius
+
+        // Need to return a force - how do I get that?
+        return Vector3.zero;
     }
 }

@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 679153365996993956}
   - component: {fileID: 1999136759087376962}
-  - component: {fileID: 1165245464021994606}
+  - component: {fileID: -7134143711728152318}
+  - component: {fileID: -6125756411024184341}
   m_Layer: 0
   m_Name: infected
   m_TagString: Untagged
@@ -85,7 +86,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1165245464021994606
+--- !u!114 &-7134143711728152318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 168298230139653872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3588cd7f0141b14cb46af4b10580644, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
+  direction: {x: 0, y: 0, z: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  radius: 0
+  acceleration: {x: 0, y: 0, z: 0}
+  mass: 1
+  maxSpeed: 10
+--- !u!114 &-6125756411024184341
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,3 +117,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139091fd5c709284e8d11f2346cae4ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  physicsObject: {fileID: 0}
+  maxSpeed: 0
+  maxForce: 0
