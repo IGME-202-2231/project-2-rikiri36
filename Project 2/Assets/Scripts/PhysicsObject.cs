@@ -108,30 +108,30 @@ public class PhysicsObject : MonoBehaviour
         acceleration += force;
     }
 
-    //void Bounce()
-    //{
-    //    if (position.x > camWidth)
-    //    {
-    //        velocity.x *= -1;
-    //        position.x = camWidth;
-    //    }
-    //    else if (position.x < -(camWidth))
-    //    {
-    //        velocity.x *= -1;
-    //        position.x = -camWidth;
-    //    }
+    void Bounce()
+    {
+        if (position.x > camWidth)
+        {
+            velocity.x *= -1;
+            position.x = camWidth;
+        }
+        else if (position.x < -(camWidth))
+        {
+            velocity.x *= -1;
+            position.x = -camWidth;
+        }
 
-    //    if (position.y > camHeight)
-    //    {
-    //        velocity.y *= -1;
-    //        position.y = camHeight;
-    //    }
-    //    else if (position.y < -camHeight)
-    //    {
-    //        velocity.y *= -1;
-    //        position.y = -camHeight;
-    //    }
-    //}
+        if (position.y > camHeight)
+        {
+            velocity.y *= -1;
+            position.y = camHeight;
+        }
+        else if (position.y < -camHeight)
+        {
+            velocity.y *= -1;
+            position.y = -camHeight;
+        }
+    }
 
 
     private void OnDrawGizmos()

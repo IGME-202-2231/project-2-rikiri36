@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public abstract class Agent : MonoBehaviour
 {
@@ -8,13 +9,9 @@ public abstract class Agent : MonoBehaviour
     [SerializeField] float maxSpeed;
     [SerializeField] float maxForce;
 
-    [SerializeField] float lookAheadTime;
-    [SerializeField] float wanderRadius;
-    
-
     protected Vector3 totalForce;
 
-    private Vector3 wanderForce;
+    protected Vector3 wanderForce;
 
     // Start is called before the first frame update
     void Start()
@@ -26,13 +23,13 @@ public abstract class Agent : MonoBehaviour
     void Update()
     {
         //CalcSteeringForces();
+        totalForce = Vector3.zero;
 
         CalcSteeringForces();
 
         Vector3.ClampMagnitude(totalForce, maxForce);
         physicsObject.ApplyForce(totalForce);
 
-        totalForce = Vector3.zero;
     }
 
 
@@ -93,21 +90,101 @@ public abstract class Agent : MonoBehaviour
 
     }
 
-    protected Vector3 Wander(float time)
+    /// <summary>
+    /// Determine the force to wander ahead a bit
+    /// </summary>
+    /// <param name="currentWanderAngle">A reference param to the current wander angle (in degrees). 
+    /// Reference params allow us to change the value here and whatever 
+    /// method called this will get that change!</param>
+    /// <param name="wanderRange">How big an angle delta to allow (in degrees)</param>
+    /// <param name="maxWanderAngle">How maximum angle to allow (in degrees)</param>
+    /// <param name="time">look ahead time when projecting the circle</param>
+    /// <param name="radius">radius when projecting the circle</param>
+    /// <returns></returns>
+    protected Vector3 Wander(ref float currentWanderAngle, float wanderRange,
+        float maxWanderAngle, float time, float radius)
     {
         //Choose a distance ahead
+        Vector3 futurePosOffset = CalcFuturePosition(time);
+
+        //Get a random angle by adding on a bit to whatever we used last time!
+        currentWanderAngle += Random.Range(-wanderRange, wanderRange);
+
+        // And stay inside a given max range!
+        if (currentWanderAngle > maxWanderAngle)
+        {
+            currentWanderAngle = maxWanderAngle;
+        }
+        else if (currentWanderAngle < -maxWanderAngle)
+        {
+            currentWanderAngle = -maxWanderAngle;
+        }
+
+        //Where would that displacement vector end?
+        Vector3 targetOffset = futurePosOffset;
+        targetOffset.x += Mathf.Cos(currentWanderAngle * Mathf.Deg2Rad) * radius;
+        targetOffset.y += Mathf.Sin(currentWanderAngle * Mathf.Deg2Rad) * radius;
+
+        // Need to return a force - seek the target position
+        // (current position + target offset)
+        return Seek(targetOffset + physicsObject.Position);
+    }
+
+    //protected Vector3 StayInBounds(float time)
+    //{
+    //    Vector3 futurePos = CalcFuturePosition(time);
+
+    //    //right
+    //    if (futurePos.x > physicsObject.CamWidth)
+    //    {
+    //        Vector3 desired = new Vector3(maxSpeed, physicsObject.Velocity.y);
+    //        Vector3 steer = desired - physicsObject.Velocity;
+    //        Vector3.ClampMagnitude(steer, maxForce);
+    //        return steer;
+    //    }
+    //    //left
+    //    else if (futurePos.x < -physicsObject.CamWidth)
+    //    {
+    //        Vector3 desired = new Vector3(-maxSpeed, physicsObject.Velocity.y);
+    //        Vector3 steer = desired - physicsObject.Velocity;
+    //        Vector3.ClampMagnitude(steer, maxForce);
+    //        return steer;
+    //    }
+
+    //    //top
+    //    if (futurePos.y > physicsObject.CamHeight)
+    //    {
+    //        Vector3 desired = new Vector3(physicsObject.Velocity.x, maxSpeed);
+    //        Vector3 steer = desired - physicsObject.Velocity;
+    //        Vector3.ClampMagnitude(steer, maxForce);
+    //        return steer;
+    //    }
+
+    //    //bottom
+    //    else if (futurePos.y < -physicsObject.CamHeight)
+    //    {
+    //        Vector3 desired = new Vector3(physicsObject.Velocity.x, -maxSpeed);
+    //        Vector3 steer = desired - physicsObject.Velocity;
+    //        Vector3.ClampMagnitude(steer, maxForce);
+    //        return steer;
+    //    }
+
+    //    return Vector3.zero;
+    //}
+
+    protected Vector3 StayInBounds(float time)
+    {
         Vector3 futurePos = CalcFuturePosition(time);
 
-        //"Project a circle" into that space
-        //What radius works best? Do radii have an effect on agent's movement?
-        //Get a random angle to determine displacement vector
-        float randAngle = Random.Range(0, Mathf.PI * 2);
+        if (futurePos.x > physicsObject.CamWidth ||
+            futurePos.x < -physicsObject.CamWidth ||
+            futurePos.y > physicsObject.CamHeight ||
+            futurePos.y < -physicsObject.CamHeight)
+        {
+            return Seek(Vector3.zero);
 
-        //Where would that displacement vector end?  Go there.
-        Vector3 targetPos = futurePos;
-        //targetPos.x / y += Mathf.Sin / Cos(randAngle) * radius
-
-        // Need to return a force - how do I get that?
+        }
         return Vector3.zero;
     }
+
 }
