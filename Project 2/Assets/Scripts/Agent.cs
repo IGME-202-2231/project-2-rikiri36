@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,9 +10,13 @@ public abstract class Agent : MonoBehaviour
     [SerializeField] float maxSpeed;
     [SerializeField] float maxForce;
 
+    [SerializeField] private List<Obstacle> obstacles;
+
     protected Vector3 totalForce;
 
     protected Vector3 wanderForce;
+
+    protected List<Vector3> foundObstacles = new List<Vector3>();
 
     // Start is called before the first frame update
     void Start()
@@ -159,5 +164,68 @@ public abstract class Agent : MonoBehaviour
         }
         return Vector3.zero;
     }
+
+    protected Vector3 AvoidObstacles(float time)
+    {
+        Vector3 totalAvoidForce = Vector3.zero;
+        foundObstacles.Clear();
+
+        foreach(Obstacle obstacle in obstacles)
+        {
+            Vector3 agentToObstacle = obstacle.transform.position - transform.position;
+            float rightDot = 0, forwardDot = 0;
+
+            forwardDot = Vector3.Dot(physicsObject.Direction, agentToObstacle);
+
+            Vector3 futurePos = CalcFuturePosition(time);
+
+            float dist = Vector3.Distance(transform.position, futurePos) + physicsObject.Radius;
+
+            //if in front of me
+            if (forwardDot >= -obstacle.Radius)
+            {
+                //within the box in front of us
+                if(forwardDot <= dist + obstacle.Radius)
+                {
+                    //TODO: Add a steerng force
+                    foundObstacles.Add(obstacle.transform.position);
+
+                    // how far left/right?
+                    rightDot = Vector3.Dot(transform.right, agentToObstacle);
+
+                    Vector3 steeringForce = transform.right * (forwardDot/dist) * physicsObject.MaxForce;
+
+                    // is the Obstacle withint the safe box width?
+                    if (Mathf.Abs(rightDot) <= physicsObject.Radius + obstacle.Radius)
+                    {
+                        // Add a steering force
+                        foundObstacles.Add(obstacle.transform.position);
+
+                        // if left, sterr right
+                        if (rightDot < 0)
+                        {
+                            
+                        }
+                        // if right, steer left
+                        else
+                        {
+
+                        }
+
+                    }
+
+                }
+
+                
+            }
+            //otherwise it's behind me and I don't care
+
+
+
+        }
+
+        return totalAvoidForce;
+    }
+
 
 }

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2455446118962343003}
   - component: {fileID: 3381273517445356393}
   - component: {fileID: 8736383652418001758}
-  - component: {fileID: 3587434676514839518}
   m_Layer: 0
   m_Name: obstacle
   m_TagString: Untagged
@@ -105,18 +104,3 @@ MonoBehaviour:
   mass: 1
   maxSpeed: 10
   radius: 0
---- !u!114 &3587434676514839518
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6269100476584111742}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 139091fd5c709284e8d11f2346cae4ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  physicsObject: {fileID: 0}
-  maxSpeed: 0
-  maxForce: 0

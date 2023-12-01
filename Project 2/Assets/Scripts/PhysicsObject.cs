@@ -39,6 +39,7 @@ public class PhysicsObject : MonoBehaviour
         get { return radius; }
     }
 
+    public float MaxForce { get { return maxSpeed; } }
 
     //camera
     Camera cam;

@@ -14,6 +14,7 @@ public class Uninfected : Agent
     
 
     private Vector3 boundsForce;
+    [SerializeField] private float avoidWeight;
 
     protected override void CalcSteeringForces()
     {
@@ -22,6 +23,7 @@ public class Uninfected : Agent
         boundsForce = StayInBounds(boundsTime);
         boundsForce *= boundsScalar;
         totalForce += boundsForce;
+        totalForce += AvoidObstacles(timeAhead);
     }
 
     private void OnDrawGizmos()
@@ -50,11 +52,11 @@ public class Uninfected : Agent
         //
         //  Draw lines to found obstacles
         //
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Color.red;
 
-        //foreach (Vector3 pos in foundObstacles)
-        //{
-        //    Gizmos.DrawLine(transform.position, pos);
-        //}
+        foreach (Vector3 pos in foundObstacles)
+        {
+            Gizmos.DrawLine(transform.position, pos);
+        }
     }
 }
