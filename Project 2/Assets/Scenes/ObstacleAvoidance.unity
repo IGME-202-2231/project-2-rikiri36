@@ -233,7 +233,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1549971024692616895, guid: 0dca8079d8dbcbb4bbf92c5d3c3777f4, type: 3}
       propertyPath: timeAhead
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1549971024692616895, guid: 0dca8079d8dbcbb4bbf92c5d3c3777f4, type: 3}
       propertyPath: boundsTime
@@ -249,7 +249,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1549971024692616895, guid: 0dca8079d8dbcbb4bbf92c5d3c3777f4, type: 3}
       propertyPath: wanderRadius
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1549971024692616895, guid: 0dca8079d8dbcbb4bbf92c5d3c3777f4, type: 3}
       propertyPath: physicsObject
