@@ -21,8 +21,5 @@ public class Obstacle : MonoBehaviour
         
     }
 
-    private void OnDrawGizmos()
-    {
-        
-    }
+    
 }

@@ -154,10 +154,10 @@ public abstract class Agent : MonoBehaviour
     {
         Vector3 futurePos = CalcFuturePosition(time);
 
-        if (futurePos.x > (physicsObject.CamWidth-0.5) ||
-            futurePos.x < -(physicsObject.CamWidth-.5) ||
-            futurePos.y > (physicsObject.CamHeight-.5) ||
-            futurePos.y < -(physicsObject.CamHeight-.5) )
+        if (futurePos.x > (physicsObject.CamWidth- physicsObject.Radius) ||
+            futurePos.x < -(physicsObject.CamWidth- physicsObject.Radius) ||
+            futurePos.y > (physicsObject.CamHeight- physicsObject.Radius) ||
+            futurePos.y < -(physicsObject.CamHeight- physicsObject.Radius) )
         {
             return Seek(Vector3.zero);
 
@@ -175,41 +175,45 @@ public abstract class Agent : MonoBehaviour
             Vector3 agentToObstacle = obstacle.transform.position - transform.position;
             float rightDot = 0, forwardDot = 0;
 
+            //find whether if the obstacle is in front or behind agent.
+            //positive if in front, negative if behind
             forwardDot = Vector3.Dot(physicsObject.Direction, agentToObstacle);
 
+            //because it's wandering, future position is needed
             Vector3 futurePos = CalcFuturePosition(time);
 
+            //?
             float dist = Vector3.Distance(transform.position, futurePos) + physicsObject.Radius;
 
             //if in front of me
-            if (forwardDot >= -obstacle.Radius)
+            //if the two vectors are perpendicular to each other, dot product is zero
+            if (forwardDot >= 0)
             {
                 //within the box in front of us
-                if(forwardDot <= dist + obstacle.Radius)
+                if (forwardDot <= dist + obstacle.Radius)
                 {
-                    //TODO: Add a steerng force
-                    foundObstacles.Add(obstacle.transform.position);
-
+                    
                     // how far left/right?
                     rightDot = Vector3.Dot(transform.right, agentToObstacle);
 
-                    Vector3 steeringForce = transform.right * (forwardDot/dist) * physicsObject.MaxForce;
+                    //Vector3 steeringForce = transform.right / Mathf.Abs(forwardDot/dist);
+                    Vector3 steeringForce = transform.right * (1 - forwardDot / dist) * physicsObject.MaxForce;
 
                     // is the Obstacle withint the safe box width?
-                    if (Mathf.Abs(rightDot) <= physicsObject.Radius + obstacle.Radius)
+                    if (Mathf.Abs(rightDot) <= (physicsObject.Radius + obstacle.Radius) ) // 
                     {
-                        // Add a steering force
                         foundObstacles.Add(obstacle.transform.position);
 
                         // if left, sterr right
                         if (rightDot < 0)
                         {
-                            
+                            totalAvoidForce += steeringForce;
                         }
-                        // if right, steer left
-                        else
-                        {
 
+                        //if right, steer left.
+                        else if (rightDot > 0)
+                        {
+                            totalAvoidForce += -steeringForce;
                         }
 
                     }
@@ -227,5 +231,9 @@ public abstract class Agent : MonoBehaviour
         return totalAvoidForce;
     }
 
-
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, CalcFuturePosition(2) );
+    }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class Uninfected : Agent
 
     private Vector3 boundsForce;
     [SerializeField] private float avoidWeight;
+    
 
     protected override void CalcSteeringForces()
     {
@@ -23,7 +25,7 @@ public class Uninfected : Agent
         boundsForce = StayInBounds(boundsTime);
         boundsForce *= boundsScalar;
         totalForce += boundsForce;
-        totalForce += AvoidObstacles(timeAhead);
+        totalForce += AvoidObstacles(timeAhead) * avoidWeight ;
     }
 
     private void OnDrawGizmos()

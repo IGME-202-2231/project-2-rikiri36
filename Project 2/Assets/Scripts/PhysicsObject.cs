@@ -140,5 +140,11 @@ public class PhysicsObject : MonoBehaviour
         //Gizmos.DrawLine(transform.position, transform.position + (velocity.normalized * 2));
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(transform.position, transform.position + Velocity);
+
+
+        Gizmos.DrawWireSphere(Position, Radius);
+
     }
+
+
 }
