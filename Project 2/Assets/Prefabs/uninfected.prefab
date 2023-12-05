@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19aacfc16a7bd24ca62afcaaa00dac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  physicsObject: {fileID: 0}
+  physicsObject: {fileID: 3152946227877799335}
   maxSpeed: 0
   maxForce: 0
   obstacles: []
