@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Obstacle : MonoBehaviour
 {
@@ -21,5 +22,15 @@ public class Obstacle : MonoBehaviour
         
     }
 
-    
+
+    private void OnDrawGizmos()
+    {
+        //Gizmos.DrawLine(transform.position, transform.position + (velocity.normalized * 2));
+        Gizmos.color = Color.cyan;
+
+        Gizmos.DrawWireSphere(transform.position, radius);
+
+        //Gizmos.DrawWireCube(Position, new Vector3(radius, radius, 0) );
+    }
+
 }

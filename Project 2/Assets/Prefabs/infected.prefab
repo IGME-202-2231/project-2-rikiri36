@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 168298230139653872}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -103,8 +103,8 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
   mass: 1
-  maxSpeed: 10
-  radius: 0
+  maxSpeed: 2
+  radius: 0.38
 --- !u!114 &-6125756411024184341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,6 +117,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139091fd5c709284e8d11f2346cae4ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  physicsObject: {fileID: 0}
-  maxSpeed: 0
-  maxForce: 0
+  manager: {fileID: 3371494262096032224, guid: dcc0965d155367a46abdab107aa1af0a, type: 3}
+  physicsObject: {fileID: -7134143711728152318}
+  maxSpeed: 2
+  maxForce: 1
+  separateRange: 1
+  wallBoundaryOffSet: 0.6
+  currentWanderAngle: 0
+  maxWanderAngle: 45
+  maxWanderChangePerSecond: 45
+  timeAhead: 2
+  wanderRadius: 1
+  boundsTime: 1
+  boundsScalar: 3
+  avoidWeight: 3

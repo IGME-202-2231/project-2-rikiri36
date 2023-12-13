@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class PhysicsObject : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class PhysicsObject : MonoBehaviour
 
     public Vector3 Direction
     {
-        get { return position; }
+        get { return direction; }
     }
 
     public Vector3 Position
@@ -22,6 +23,7 @@ public class PhysicsObject : MonoBehaviour
     public Vector3 Velocity
     {
         get { return velocity; }
+        set { velocity = value; }
     }
 
     // Sum of all forces in a frame - New
@@ -60,13 +62,15 @@ public class PhysicsObject : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cam = Camera.main;
+        cam = FindObjectOfType<Camera>();
         camHeight = cam.orthographicSize;
         camWidth = camHeight * cam.aspect;
 
         position = transform.position;
 
         direction = Random.insideUnitCircle.normalized;
+        //Debug.Log(direction);
+        
     }
 
     // Update is called once per frame
@@ -74,27 +78,22 @@ public class PhysicsObject : MonoBehaviour
     {
         //apply ALL forces first
 
-
-
         // Calculate the velocity for this frame - New
         velocity += acceleration * Time.deltaTime;
-        velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
-        gameObject.transform.rotation = Quaternion.LookRotation(Vector3.forward, velocity);
+        velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
         position += velocity * Time.deltaTime;
 
-        //Bounce();
-
-        // Grab current direction from velocity  - New
-        direction = velocity.normalized;
+        transform.rotation = Quaternion.LookRotation(Vector3.back, direction);
 
         transform.position = position;
+        direction = velocity.normalized;
 
         // Zero out acceleration - New
         acceleration = Vector3.zero;
 
-
+        
 
     }
 
@@ -104,46 +103,20 @@ public class PhysicsObject : MonoBehaviour
         acceleration += force / mass;
     }
 
-    void ApplyGravity(Vector3 force)
-    {
-        acceleration += force;
-    }
-
-    void Bounce()
-    {
-        if (position.x > camWidth)
-        {
-            velocity.x *= -1;
-            position.x = camWidth;
-        }
-        else if (position.x < -(camWidth))
-        {
-            velocity.x *= -1;
-            position.x = -camWidth;
-        }
-
-        if (position.y > camHeight)
-        {
-            velocity.y *= -1;
-            position.y = camHeight;
-        }
-        else if (position.y < -camHeight)
-        {
-            velocity.y *= -1;
-            position.y = -camHeight;
-        }
-    }
-
-
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(Vector3.zero, new Vector3(CamWidth*2 -0.5f , CamHeight*2 -0.5f, 0));
+
         //Gizmos.DrawLine(transform.position, transform.position + (velocity.normalized * 2));
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(transform.position, transform.position + Velocity);
+        
 
 
-        Gizmos.DrawWireSphere(Position, Radius);
+        Gizmos.DrawWireSphere(transform.position, Radius);
 
+        //Gizmos.DrawWireCube(Position, new Vector3(radius, radius, 0) );
     }
 
 
