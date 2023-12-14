@@ -1,6 +1,5 @@
 # Project _NAME_
 
-[Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet)
 
 _REPLACE OR REMOVE EVERYTING BETWEEN "\_"_
 
@@ -19,10 +18,6 @@ _In a huge "room" (The whole screen) filled with people/cells wandering around. 
 -   _Drop in an "infect" person/cell_
     -   _Mouse input_
     -   _The infected will chase uninfected, slowly converting all the uninfected if untreated_
-
--   _UI input (speed mode)[^2]_
-    -   _Ui input_
-    -   _Make the simulation run faster (**maybe**)_
 
 -   _UI input (restart)[^2]_
     -   _Ui input_
@@ -123,11 +118,13 @@ _The enemy of the simulation. Will chase afterward nearest (if possible) uninfec
 
 ## Known Issues
 
-_List any errors, lack of error checking, or specific information that I need to know to run your program_
+_"Game" can be played normally. No known issues._
 
 ### Requirements not completed
 
-_If you did not complete a project requirement, notate that here_
+- _4 unqiue states may not have been implemented. _
+- _"Healers", as mentioned in this document, has not been implemented as planned_
+- _The uninfected(not green color) does not run from the infected(green)
 
 
 [^1]: May or may not change. I'm not too sure. Maybe.

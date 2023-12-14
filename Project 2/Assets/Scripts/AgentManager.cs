@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.VFX;
+
 
 
 public enum Status
@@ -22,7 +21,7 @@ public class AgentManager : MonoBehaviour
 {
 
     [SerializeField] public List<Obstacle> obstacles;
-    public List<Agent> uninfectedList;
+    public List<Uninfected> uninfectedList;
     [SerializeField] public List<Agent> infectedList;
 
     [SerializeField] private Obstacle obstaclePrefab;
@@ -42,40 +41,99 @@ public class AgentManager : MonoBehaviour
         camHeight = cam.orthographicSize;
         camWidth = camHeight * cam.aspect;
         
+        this.GetComponent<PlayerController>().MainCamera = cam;
 
         Spawn();
+
+        //temp 
+        infectedList.Clear();
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (this.GetComponent<PlayerController>().ToSpawn)
+        {
+            SpawnInfected(this.GetComponent<PlayerController>().MousePosition);
+            this.GetComponent<PlayerController>().ToSpawn = false;
+        }
+
+
+        if (this.GetComponent<PlayerController>().ToReset)
+        {
+            Reset();
+            this.GetComponent<PlayerController>().ToReset = false;
+        }
     }
 
 
     private void Spawn()
     {
-        SpawnObstacles();
 
+        SpawnObstacles();
         SpawnUninfected();
 
+    }
 
+    void CleanUp()
+    {
+        if (uninfectedList.Count > 0)
+        {
+            foreach (Uninfected a in uninfectedList)
+            {
+                Destroy(a.gameObject);
+            }
+            uninfectedList.Clear();
+        }
+        
+        if (infectedList.Count > 0)
+        {
+            foreach (Infected b in infectedList)
+            {
+                Destroy(b.gameObject);
+            }
+
+            infectedList.Clear();
+        }
+        
+    }
+
+    private void Reset()
+    {
+        CleanUp();
+
+        SpawnUninfected();
     }
 
     private void SpawnUninfected()
     {
-        for (int i = 0; i < 10; i++)
+        uninfectedList.Clear();
+        for (int i = 0; i < 50; i++)
         {
             uninfectedList.Add(Instantiate(uninfectedPrefab, new Vector3 (0,0,0), Quaternion.identity) );
+
+            uninfectedList[i].GetComponent<Agent>().Manager = this.gameObject;
+
+            
+            
         }
+    }
+
+    //player click
+    private void SpawnInfected(Vector2 position)
+    {
+        Agent infected = Instantiate(infectedPrefab, new Vector3(position.x, position.y, 0), Quaternion.identity).GetComponent<Agent>();
+        infected.GetComponent<Agent>().Manager = this.gameObject;
+        infectedList.Add(infected );
+        
+        
     }
 
 
     private void SpawnObstacles()
     {
         obstacles.Clear();
-
         //spawning in obstacles
         obstacles.Add(
             Instantiate(obstaclePrefab,
@@ -109,6 +167,6 @@ public class AgentManager : MonoBehaviour
     }
 
 
-    
 
+ 
 }

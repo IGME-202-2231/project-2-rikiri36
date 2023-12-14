@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139091fd5c709284e8d11f2346cae4ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 3371494262096032224, guid: dcc0965d155367a46abdab107aa1af0a, type: 3}
+  manager: {fileID: 2867399736413787496, guid: 99e34d706f808a84e9cb2ab6a7376bf0, type: 3}
   physicsObject: {fileID: -7134143711728152318}
   maxSpeed: 2
   maxForce: 1

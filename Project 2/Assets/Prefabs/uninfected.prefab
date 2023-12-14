@@ -117,17 +117,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19aacfc16a7bd24ca62afcaaa00dac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 3371494262096032224, guid: dcc0965d155367a46abdab107aa1af0a, type: 3}
   physicsObject: {fileID: 3152946227877799335}
   maxSpeed: 2
   maxForce: 1
-  separateRange: 1
   wallBoundaryOffSet: 0.6
   currentWanderAngle: 0
-  maxWanderAngle: 90
+  maxWanderAngle: 180
   maxWanderChangePerSecond: 45
   timeAhead: 2
   wanderRadius: 1
   boundsTime: 1
-  boundsScalar: 3
+  boundsScalar: 5
+  fleeWeight: 10
   avoidWeight: 3

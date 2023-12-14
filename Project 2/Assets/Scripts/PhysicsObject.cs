@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
+
 
 public class PhysicsObject : MonoBehaviour
 {
@@ -106,7 +106,7 @@ public class PhysicsObject : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(Vector3.zero, new Vector3(CamWidth*2 -0.5f , CamHeight*2 -0.5f, 0));
+        Gizmos.DrawWireCube(Vector3.zero, new Vector3(CamWidth*2 -0.5f , CamHeight*2 -2f, 0));
 
         //Gizmos.DrawLine(transform.position, transform.position + (velocity.normalized * 2));
         Gizmos.color = Color.cyan;

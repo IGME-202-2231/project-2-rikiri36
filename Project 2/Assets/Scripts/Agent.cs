@@ -1,21 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
-using TMPro.EditorUtilities;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 public abstract class Agent : MonoBehaviour
 {
     //agent manager
-    [SerializeField] AgentManager manager;
+    private GameObject manager;
+
+    public GameObject Manager
+    {
+        get { return  manager; }
+        set { manager = value; }
+    }
 
     [SerializeField] protected PhysicsObject physicsObject;
     [SerializeField] protected float maxSpeed = 2f;
     [SerializeField] float maxForce = 1f;
 
-    [SerializeField] float separateRange = 1f;
 
     /// <summary>
     /// How many pixels lifted from the camera area to check for stay in bounds
@@ -23,12 +27,22 @@ public abstract class Agent : MonoBehaviour
     [SerializeField] float wallBoundaryOffSet = 0.6f;
 
     private List<Obstacle> obstacles;
-    private List<Agent> uninfectedList;
-    private List<Agent> infectedList;
+    protected List<Uninfected> uninfectedList;
+    protected List<Agent> infectedList;
+
+    public List<Obstacle> ObstaclesList
+    {
+        set
+        {
+            obstacles = value;
+        }
+    }
 
     protected Vector3 totalForce;
 
     protected Vector3 wanderForce;
+
+    private float borderTimer = 1;
 
     protected List<Vector3> foundObstacles = new List<Vector3>();
 
@@ -40,6 +54,7 @@ public abstract class Agent : MonoBehaviour
     public Status CurrentStatus
     {
         get { return currentStatus; }
+        set { currentStatus = value; }
     }
 
     protected virtual void Init()
@@ -52,13 +67,21 @@ public abstract class Agent : MonoBehaviour
     {
         Init();
 
-        obstacles = manager.obstacles;
-        uninfectedList = manager.uninfectedList;
-        infectedList = manager.infectedList;
+        obstacles = manager.GetComponent<AgentManager>().obstacles;
+        uninfectedList = manager.GetComponent<AgentManager>().uninfectedList;
+        infectedList = manager.GetComponent<AgentManager>().infectedList;
 
         if (currentInfectionState == InfectionStatus.Infected)
         {
-            target = uninfectedList[Random.Range(0, uninfectedList.Count - 1)];
+            if (uninfectedList.Count > 0)
+            {
+                target = uninfectedList[Random.Range(0, uninfectedList.Count - 1)];
+            }
+            else
+            {
+                target = null;
+            }
+            
         }
     }
 
@@ -94,7 +117,7 @@ public abstract class Agent : MonoBehaviour
         return seekingForce;
     }
 
-    protected Vector3 Seek(GameObject target)
+    protected Vector3 Seek(Agent target)
     {
         // Call the other version of Seek 
         //   which returns the seeking steering force
@@ -102,6 +125,7 @@ public abstract class Agent : MonoBehaviour
         return Seek(target.transform.position);
     }
 
+    
 
     protected Vector3 Flee(Vector3 targetPos)
     {
@@ -156,6 +180,25 @@ public abstract class Agent : MonoBehaviour
     protected Vector3 Wander(ref float currentWanderAngle, float maxWanderAngle,
         float maxWanderChangePerSec, float time, float radius)
     {
+        Vector3  getAwayFromBorder = Vector3.zero;
+
+        if (transform.position.x > (physicsObject.CamWidth - 2f) ||
+            transform.position.x < -(physicsObject.CamWidth - 2f) ||
+            transform.position.y > (physicsObject.CamHeight - 2f) ||
+            transform.position.x < -(physicsObject.CamHeight - 2f)    )
+        {
+            if (borderTimer > 0)
+            {
+                borderTimer -= Time.deltaTime;
+            }
+            else
+            {
+                getAwayFromBorder = Seek(Vector3.zero) * 20;
+                borderTimer = 3;
+            }
+        }
+        
+
         //Choose a distance ahead
         Vector3 futurePos = CalcFuturePosition(time);
 
@@ -190,27 +233,57 @@ public abstract class Agent : MonoBehaviour
         targetPos.y += Mathf.Sin(currentWanderAngle * Mathf.Deg2Rad) * radius;
 
         // Need to return a force - how do I get that?
-        return Seek(targetPos);
+        return Seek(targetPos) + getAwayFromBorder;
     }
 
     protected Vector3 StayInBounds(float time)
     {
         Vector3 futurePos = CalcFuturePosition(time);
 
-        if (futurePos.x > (physicsObject.CamWidth- wallBoundaryOffSet) ||
-            futurePos.x < -(physicsObject.CamWidth- wallBoundaryOffSet) ||
-            futurePos.y > (physicsObject.CamHeight- wallBoundaryOffSet) ||
-            futurePos.y < -(physicsObject.CamHeight- wallBoundaryOffSet) )
+        if (futurePos.x > (physicsObject.CamWidth - wallBoundaryOffSet) ||
+            futurePos.x < -(physicsObject.CamWidth - wallBoundaryOffSet) ||
+            futurePos.y > (physicsObject.CamHeight - wallBoundaryOffSet) ||
+            futurePos.y < -(physicsObject.CamHeight - wallBoundaryOffSet))
         {
-            return Seek(Vector3.zero) ;
-            
+
+
+
+
+
+            return Seek(Vector3.zero) * 2;
+
 
         }
+
         return Vector3.zero;
+
+        //Vector3 targetPos = Vector3.zero;
+
+        //if (futurePos.x > (physicsObject.CamWidth - wallBoundaryOffSet) ||
+        //    futurePos.x < -(physicsObject.CamWidth - wallBoundaryOffSet) )
+        //{
+        //    targetPos = futurePos;
+        //    targetPos.x = -futurePos.x;
+
+        //    return Seek(targetPos) + Seek(Vector3.zero);
+
+        //}
+        //if (futurePos.y > (physicsObject.CamHeight - wallBoundaryOffSet) ||
+        //    futurePos.y < -(physicsObject.CamHeight - wallBoundaryOffSet) )
+        //{
+        //    targetPos = futurePos;
+        //    targetPos.y = -futurePos.y;
+        //    return Seek(targetPos) + Seek(Vector3.zero);
+
+        //}
+
+        //return targetPos;
     }
 
     protected Vector3 AvoidObstacles(float timeAhead, float wanderRadius)
     {
+        Vector3 originalVel = physicsObject.Velocity;
+
         Vector3 totalAvoidForce = Vector3.zero;
         foundObstacles.Clear();
 
@@ -273,74 +346,111 @@ public abstract class Agent : MonoBehaviour
 
         }
 
-
+        totalAvoidForce += originalVel.normalized;
         
         return totalAvoidForce;
     }
 
 
-    protected Vector3 Separate(float timeAhead, float wanderRadius)
+    protected Vector3 Separate(InfectionStatus type)
     {
-        Vector3 separateForce = Vector3.zero;
+        Vector3 totalSeparateForce = Vector3.zero;
+        int count = 0;
 
-        foreach (Uninfected a in uninfectedList)
-        {
-            float dist = Vector3.Distance(transform.position, a.transform.position);
-
-            Vector3 futurePos = transform.position + (physicsObject.Velocity.normalized * timeAhead);
-            float detectionRange = Vector3.Distance(futurePos, transform.position) + wanderRadius;
-
-            if (dist < (detectionRange + a.physicsObject.Radius) )
-            {
-                // checking if agent is not on top or itself
-                if (Mathf.Epsilon < dist)
-                {
-                    Vector3 atoAgent = a.transform.position - transform.position;
-                    float rightDot = Vector3.Dot(atoAgent, transform.right);
-                    Vector3 steeringForce = transform.right * (separateRange /dist);
-
-                    // if left, sterr right
-                    if (rightDot < 0)
-                    {
-                        separateForce += (steeringForce);
-                    }
-                    //if right, steer left.
-                    else if (rightDot > 0)
-                    {
-                        separateForce += -(steeringForce);
-                    }
-                    else if (rightDot == 0)
-                    {
-                        separateForce += (steeringForce);
-                    }
-
-                    //separateForce += Flee(a) * (separateRange / dist);
-                }
-            }
-            
-        }
-
-        return separateForce;
-    }
-
-    public Agent FindCloset(InfectionStatus type)
-    {
-        float minDist = Mathf.Infinity;
-        Agent nearest = null; ;
+        float detectionRange = physicsObject.Radius * 1.5f;
+        float dist = 0;
 
         switch (type)
         {
             case InfectionStatus.Uninfected:
 
-                foreach (Agent uninfected in uninfectedList)
+                foreach (Uninfected a in uninfectedList)
                 {
-                    if (uninfected.GetComponent<Agent>().CurrentStatus != Status.Dead)
+                    dist = Vector3.Distance(transform.position, a.transform.position);
+
+                    if (dist < (detectionRange + a.physicsObject.Radius) && dist > 0)
+                    {
+                        // checking if agent is not on top or itself
+                        if (Mathf.Epsilon < dist)
+                        {
+                            Vector3 desiredVelocity = Flee(a).normalized;
+
+                            totalSeparateForce += (desiredVelocity / dist);
+                            count++;
+
+                        }
+                    }
+
+                }
+
+                if (count > 0)
+                {
+                    totalSeparateForce = totalSeparateForce / count;
+
+                    totalSeparateForce *= maxSpeed;
+
+                    totalSeparateForce = totalSeparateForce - physicsObject.Velocity;
+                }
+
+                
+
+                break;
+
+            case InfectionStatus.Infected:
+
+                foreach (Infected b in infectedList)
+                {
+                    dist = Vector3.Distance(transform.position, b.transform.position);
+
+                    if (dist < (detectionRange + b.physicsObject.Radius) && dist > 0)
+                    {
+                        // checking if agent is not on top or itself
+                        if (Mathf.Epsilon < dist)
+                        {
+                            Vector3 desiredVelocity = Flee(b).normalized;
+
+                            totalSeparateForce += (desiredVelocity / dist);
+                            count++;
+
+                        }
+                    }
+
+                }
+
+                if (count > 0)
+                {
+                    totalSeparateForce = totalSeparateForce / count;
+
+                    totalSeparateForce *= maxSpeed;
+
+                    totalSeparateForce = totalSeparateForce - physicsObject.Velocity;
+                }
+
+                break;
+
+        }
+
+        return totalSeparateForce;
+    }
+
+    public Agent FindCloset(InfectionStatus type)
+    {
+        float minDist = Mathf.Infinity;
+        Agent nearest = null;
+
+        switch (type)
+        {
+            case InfectionStatus.Uninfected:
+                foreach (Uninfected uninfected in uninfectedList)
+                {
+                    if (uninfected.currentStatus != Status.Dead)
                     {
                         float dist = Vector3.Distance(uninfected.transform.position, transform.position);
 
                         if (dist < minDist)
                         {
                             nearest = uninfected;
+                            
                             minDist = dist;
                         }
                     }
@@ -349,12 +459,148 @@ public abstract class Agent : MonoBehaviour
                 break;
 
             case InfectionStatus.Infected:
+                foreach (Uninfected infected in uninfectedList)
+                {
+                    if (infected.currentStatus != Status.Dead)
+                    {
+                        float dist = Vector3.Distance(infected.transform.position, transform.position);
+
+                        if (dist < minDist)
+                        {
+                            nearest = infected;
+                            minDist = dist;
+                        }
+                    }
+                }
                 break;
         }
-
         return nearest;
     }
 
+
+    /// <summary>
+    /// ONLY for UNINFECTED object
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public Vector3 Align()
+    {
+        float neightborDist = physicsObject.Radius * 2;
+
+        float forwardDot = 0, dist = 0;
+
+        Vector3 steeringForce = Vector3.zero;
+
+        int count = 0;
+
+        Vector3 sum = Vector3.zero;
+
+        Vector3 agentToNeightbor = Vector3.zero;
+
+        foreach (Uninfected a in uninfectedList)
+        {
+            agentToNeightbor = a.transform.position - transform.position;
+
+            forwardDot = Vector3.Dot(physicsObject.Direction.normalized, agentToNeightbor);
+
+            if (forwardDot > 0)
+            {
+                dist = Vector3.Distance(transform.position, a.transform.position);
+
+                if (dist < neightborDist && dist > Mathf.Epsilon)
+                {
+                    sum += a.physicsObject.Velocity;
+                    count++;
+                }
+            }
+        }
+
+        if (count > 0)
+        {
+            sum = (sum / count).normalized;
+
+            sum *= maxSpeed;
+
+            steeringForce = sum - physicsObject.Velocity;
+            steeringForce = Vector3.ClampMagnitude(steeringForce, maxForce);
+
+            return steeringForce;
+        }
+        else
+        {
+            return steeringForce;
+        }
+        
+    }
+
+    /// <summary>
+    /// ONLY for UNINFECTED
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 Cohesion()
+    {
+        float neightborDist = physicsObject.Radius * 2;
+
+        float forwardDot = 0, dist = 0;
+
+        int count = 0;
+
+        Vector3 sum = Vector3.zero;
+
+        Vector3 agentToNeightbor = Vector3.zero;
+
+        foreach (Uninfected a in uninfectedList)
+        {
+            agentToNeightbor = a.transform.position - transform.position;
+
+            forwardDot = Vector3.Dot(physicsObject.Direction.normalized, agentToNeightbor);
+
+            if (forwardDot > 0)
+            {
+                dist = Vector3.Distance(transform.position, a.transform.position);
+
+                if (dist < neightborDist && dist > Mathf.Epsilon)
+                {
+                    sum += a.transform.position;
+                    count++;
+                }
+            }
+        }
+
+        if (count > 0)
+        {
+            sum = (sum / count);
+
+            sum *= maxSpeed;
+
+            return Seek(sum);
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+    }
+    
+    /// <summary>
+    /// for UNINFECTED ONLY
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 Flock()
+    {
+        Vector3 sum = Vector3.zero;
+
+        sum += Separate(InfectionStatus.Uninfected);
+        sum += Align();
+        sum += Cohesion();
+        
+
+        return sum;
+    }
+
+    public void Kill(Agent target)
+    {
+        target.currentStatus = Status.Dead;
+    }
 
     private void OnDrawGizmos()
     {

@@ -15,7 +15,8 @@ public class Uninfected : Agent
     [SerializeField] private float wanderRadius;
     [SerializeField] private float boundsTime;
     [SerializeField] private float boundsScalar;
-    
+
+    //[SerializeField] private float fleeWeight = 1f;
 
     private Vector3 boundsForce;
     [SerializeField] private float avoidWeight;
@@ -30,12 +31,25 @@ public class Uninfected : Agent
         {
             case Status.Alive:
 
+                //target = FindCloset(InfectionStatus.Infected);
+
+                //float dist = Vector3.Distance(target.transform.position, transform.position);
+
+                //if (target != null && dist <= (physicsObject.Radius*2))
+                //{
+                //    //totalForce += Flee(target) * fleeWeight;
+                //}
+
+
                 totalForce += Wander(ref currentWanderAngle, maxWanderAngle, maxWanderChangePerSecond, timeAhead, wanderRadius);
+
                 boundsForce = StayInBounds(boundsTime);
                 boundsForce *= boundsScalar;
                 totalForce += boundsForce;
+
                 totalForce += AvoidObstacles(timeAhead, wanderRadius) * avoidWeight;
-                totalForce += Separate(1f, wanderRadius);
+                totalForce += Separate(InfectionStatus.Uninfected);
+                totalForce += Flock();
 
                 break;
 

@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 
 public class Infected : Agent
@@ -32,7 +31,46 @@ public class Infected : Agent
     protected override void CalcSteeringForces()
     {
 
-        totalForce += Wander(ref currentWanderAngle, maxWanderAngle, maxWanderChangePerSecond, timeAhead, wanderRadius);
+        switch (currentStatus)
+        {
+            case Status.Alive:
+                
+                if (target == null  )
+                {
+                    target = FindCloset(InfectionStatus.Uninfected);
+                }
+                else if (target != null && target.CurrentStatus == Status.Dead)
+                {
+                    target = FindCloset(InfectionStatus.Uninfected);
+                }
+
+
+                if (target != null )
+                {
+                    totalForce += Seek(target);
+
+                    //checking for contact to kill
+                    if (Vector3.Distance(transform.position, target.transform.position) <= physicsObject.Radius)
+                    {
+                        Kill(target);
+                    }
+                }
+                else
+                {
+                    totalForce += Wander(ref currentWanderAngle, maxWanderAngle, maxWanderChangePerSecond, timeAhead, wanderRadius);
+
+                }
+
+
+                break;
+
+            case Status.Dead:
+                physicsObject.Velocity = Vector3.zero;
+
+                break;
+
+        }
+
         //totalForce += Separate(timeAhead, wanderRadius);
         boundsForce = StayInBounds(boundsTime);
         boundsForce *= boundsScalar;
